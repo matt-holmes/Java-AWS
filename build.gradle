@@ -1,0 +1,44 @@
+apply plugin: 'java'
+
+repositories {
+    mavenCentral()
+}
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+dependencies {
+    testCompile "junit:junit:4.12"
+    compile (
+       'com.amazonaws:aws-lambda-java-core:1.1.0',
+       'com.amazonaws:aws-lambda-java-events:1.1.0',
+   )
+   compile fileTree(dir: 'jars', include: '*.jar')
+}
+
+test {
+  testLogging.showStandardStreams = true
+
+  minHeapSize = "128m"
+  maxHeapSize = "512m"
+
+  jvmArgs '-XX:MaxPermSize=256m'
+
+  beforeTest { descriptor ->
+     logger.lifecycle("Running test: " + descriptor)
+  }
+
+  onOutput { descriptor, event ->
+     logger.lifecycle("Test: " + descriptor + " produced standard out/err: " + event.message )
+  }
+}
+
+task buildZip(type: Zip) {
+    from compileJava
+    from processResources
+    into('lib') {
+        from configurations.runtime
+    }
+}
+
+build.dependsOn buildZip
