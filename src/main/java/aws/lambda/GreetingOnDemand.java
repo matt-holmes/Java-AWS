@@ -7,13 +7,13 @@ import aws.lambda.Person;
 public class GreetingOnDemand implements RequestHandler<Person, Object> {
 
     @Override
-    public Person handleRequest(Person input, Context context) {
+    public String handleRequest(Person input, Context context) {
         String who = "World";
-        if (input != null) {
+        if (input.getName() != null) {
             who = input.getName();
         }
         String greeting = "Hello, " + who + "!";
         System.out.println(greeting);
-        return input;
+        return greeting;
     }
 }
